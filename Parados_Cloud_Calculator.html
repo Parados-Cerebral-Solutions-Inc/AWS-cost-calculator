@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cloud Cost Formula Parados</title>
+    </head>
+
+    <body>
+
+        <style>
+            body {
+                display: flex;
+                flex-flow: column nowrap;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                font-family: Arial, sans-serif;
+                font-size: 20px;
+                background-color: #f3f3f3;
+            }
+
+            .card {
+                background-color: #ffffff;
+                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+                border-radius: 10px;
+                padding: 20px;
+                width: 80%;
+                max-width: 600px;
+                text-align: center;
+            }
+
+            h1 {
+                margin-top: 0;
+            }
+
+            .cost-section,
+            .slider-section,
+            .cost-details {
+                margin-bottom: 15px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+
+            input[type="range"] {
+                width: 100%;
+            }
+
+            span[id$="Value"] {
+                font-weight: bold;
+            }
+
+            .b {
+                font-weight: bold;
+            }
+
+            /* Add this to your styles.css file */
+            input[type="number"] {
+                font-size: 20px;
+                padding: 5px;
+                width: 80px;
+                /* Adjust the width as needed */
+            }
+
+            .inputGroup {
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+                margin-bottom: 4px;
+            }
+        </style>
+        <h1>Cloud Cost Calculator for Parados</h1>
+        <div class="card">
+
+
+            <div class="cost-section">
+                <h3>AWS Cost Example:</h3>
+                <p><b>Processing Cost per Hour:</b> $<span id="processingCostPerHour">0.1344</span></p>
+                <p><b>Storage Cost per GB per Month:</b> $<span id="storageCostPerGB">0.0025</span></p>
+                <p><b>Data Transfer Cost per GB:</b> $<span id="dataTransferCostPerGB">0.001</span></p>
+            </div>
+
+            <div class="slider-section">
+                <div class="inputGroup">
+                    <label for="numUsers">Number of Users: </label>
+                    <input type="number" id="numUsers" min="1" max="20000" step="1" value="4000">
+                </div>
+
+                <div class="inputGroup">
+                    <label for="avgVideos">Avg Videos Uploaded per User per Month: </label>
+                    <input type="number" id="avgVideos" min="1" max="50" step="1" value="10">
+
+                </div>
+
+                <div class="inputGroup">
+                    <label for="avgVideoSize">Avg Video Size (MB): </label>
+                    <input type="number" id="avgVideoSize" min="1" max="1000" step="1" value="100">
+                </div>
+
+                <div class="inputGroup">
+                    <label for="avgViews">Avg Times User Views Each Result: </label>
+                    <input type="number" id="avgViews" min="1" max="20" step="1" value="5">
+                </div>
+            </div>
+
+            <div class="cost-details">
+                <p><b>Processing Cost:</b> $<span id="processingCost">0</span></p>
+                <p><b>Storage Cost:</b> $<span id="storageCost">0</span></p>
+                <p><b>Data Transfer Cost:</b> $<span id="dataTransferCost">0</span></p>
+                <h2><b>Total Monthly Cost:</b> $<span id="totalCost">0</span></h2>
+            </div>
+        </div>
+    </body>
+    <script>document.addEventListener('DOMContentLoaded', function () {
+            const numUsersSlider = document.getElementById('numUsers');
+            const avgVideosSlider = document.getElementById('avgVideos');
+            const avgVideoSizeSlider = document.getElementById('avgVideoSize');
+            const avgViewsSlider = document.getElementById('avgViews');
+            const totalCostSpan = document.getElementById('totalCost');
+            const processingCostSpan = document.getElementById('processingCost');
+            const storageCostSpan = document.getElementById('storageCost');
+            const dataTransferCostSpan = document.getElementById('dataTransferCost');
+
+            numUsersSlider.addEventListener('input', updateTotalCost);
+            avgVideosSlider.addEventListener('input', updateTotalCost);
+            avgVideoSizeSlider.addEventListener('input', updateTotalCost);
+            avgViewsSlider.addEventListener('input', updateTotalCost);
+
+            function updateTotalCost() {
+                const numUsers = parseInt(numUsersSlider.value);
+                const avgVideos = parseInt(avgVideosSlider.value);
+                const avgVideoSize = parseInt(avgVideoSizeSlider.value);
+                const avgViews = parseInt(avgViewsSlider.value);
+
+                const processingCost = 0.00224 * 3 * avgVideos * numUsers;
+                const storageCost = 0.000025 * ((avgVideoSize + avgVideoSize / 5) * avgVideos) * numUsers;
+                const dataTransferCost =
+                    0.00001 * (avgVideoSize * avgVideos + (avgVideoSize / 5) * (avgViews + 1) * avgVideos) * numUsers;
+
+                const totalMonthlyCost = processingCost + storageCost + dataTransferCost;
+
+                totalCostSpan.textContent = totalMonthlyCost.toFixed(2);
+                processingCostSpan.textContent = processingCost.toFixed(2);
+                storageCostSpan.textContent = storageCost.toFixed(2);
+                dataTransferCostSpan.textContent = dataTransferCost.toFixed(2);
+            }
+
+            function updateSliderValueDisplay(event) {
+                const sliderId = event.target.id;
+                const sliderValue = event.target.value;
+                const valueSpan = document.getElementById(`${sliderId}Value`);
+                valueSpan.textContent = sliderValue;
+            }
+
+            // Initial calculation and slider value display
+            updateTotalCost();
+            updateSliderValueDisplay({ target: numUsersSlider });
+            updateSliderValueDisplay({ target: avgVideosSlider });
+            updateSliderValueDisplay({ target: avgVideoSizeSlider });
+            updateSliderValueDisplay({ target: avgViewsSlider });
+        });</script>
+
+</html>
